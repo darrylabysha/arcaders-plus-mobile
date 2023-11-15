@@ -1,22 +1,14 @@
 import 'package:flutter/material.dart';
-
-class ShopItem {
-  final String name;
-  final IconData icon;
-  final Color color;
-  final Color textColor; 
-  final Color iconColor;
-
-  ShopItem(this.name, this.icon, this.color, this.textColor, this.iconColor);
-}
+import 'package:arcaders_plus/widgets/left_drawer.dart';
+import 'package:arcaders_plus/widgets/game_card.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({Key? key}) : super(key: key);
 
-  final List<ShopItem> items = [
-    ShopItem("View Products", Icons.checklist, const Color.fromARGB(255, 47, 93, 130), Colors.white, Colors.white), // Misalnya, warna biru
-    ShopItem("Add Products", Icons.add_shopping_cart,const Color.fromARGB(57, 0, 187, 255), Colors.black, Colors.black),
-    ShopItem("Logout", Icons.logout, const Color.fromARGB(255, 244, 79, 54), Colors.white, Colors.white),
+  final List<GameItem> items = [
+    GameItem("View Games", Icons.checklist, const Color.fromARGB(255, 47, 93, 130), Colors.white, Colors.white), // Misalnya, warna biru
+    GameItem("Add Games", Icons.add_shopping_cart,const Color.fromARGB(57, 0, 187, 255), Colors.black, Colors.black),
+    GameItem("Logout", Icons.logout, const Color.fromARGB(255, 244, 79, 54), Colors.white, Colors.white),
   ];
 
   // This widget is the home page of your application. It is stateful, meaning
@@ -35,7 +27,10 @@ class MyHomePage extends StatelessWidget {
             title: const Text(
               'Arcaders Plus',
             ),
+            backgroundColor: const Color.fromARGB(255, 47, 93, 130),
+            foregroundColor: Colors.white,
           ),
+          drawer: const LeftDrawer(),
           body: SingleChildScrollView(
             // Widget wrapper yang dapat discroll
             child: Padding(
@@ -64,9 +59,9 @@ class MyHomePage extends StatelessWidget {
                     mainAxisSpacing: 10,
                     crossAxisCount: 3,
                     shrinkWrap: true,
-                    children: items.map((ShopItem item) {
+                    children: items.map((GameItem item) {
                       // Iterasi untuk setiap item
-                      return ShopCard(item);
+                      return GameCard(item);
                     }).toList(),
                   ),
                 ],
@@ -75,49 +70,4 @@ class MyHomePage extends StatelessWidget {
           ),
         );
       }
-}
-
-class ShopCard extends StatelessWidget {
-  final ShopItem item;
-
-  const ShopCard(this.item, {super.key}); // Constructor
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: item.color,
-      child: InkWell(
-        // Area responsive terhadap sentuhan
-        onTap: () {
-          // Memunculkan SnackBar ketika diklik
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(SnackBar(
-                content: Text("You have pressed the ${item.name} button!")));
-        },
-        child: Container(
-          // Container untuk menyimpan Icon dan Text
-          padding: const EdgeInsets.all(8),
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  item.icon,
-                  color: item.iconColor,
-                  size: 30.0,
-                ),
-                const Padding(padding: EdgeInsets.all(3)),
-                Text(
-                  item.name,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: item.textColor, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 }
