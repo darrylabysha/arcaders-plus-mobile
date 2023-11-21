@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:arcaders_plus/screens/menu.dart';
 import 'package:flutter/material.dart';
 import 'package:arcaders_plus/widgets/left_drawer.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 
 class GameFormPage extends StatefulWidget {
@@ -13,11 +18,12 @@ class _GameFormPageState extends State<GameFormPage> {
     final _formKey = GlobalKey<FormState>();
     String _name = "";
     String _genre = "";
-    int _price = 0;
+    int _amount = 0;
     String _description = "";
 
     @override
     Widget build(BuildContext context) {
+      final request = context.watch<CookieRequest>();
         return Scaffold(
         appBar: AppBar(
           title: const Center(
@@ -87,23 +93,23 @@ class _GameFormPageState extends State<GameFormPage> {
                   padding: const EdgeInsets.all(8.0),
                   child: TextFormField(
                     decoration: InputDecoration(
-                      hintText: "Enter your game price here",
-                      labelText: "Price",
+                      hintText: "Enter your game amount here",
+                      labelText: "Amount:",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0),
                       ),
                     ),
                     onChanged: (String? value) {
                       setState(() {
-                        _price = int.parse(value!);
+                        _amount = int.parse(value!);
                       });
                     },
                     validator: (String? value) {
                       if (value == null || value.isEmpty) {
-                        return "Price cannot be empty!";
+                        return "Amount cannot be empty!";
                       }
                       if (int.tryParse(value) == null) {
-                        return "Price cannot be empty!";
+                        return "Amount cannot be empty!";
                       }
                       return null;
                     },
@@ -144,6 +150,7 @@ class _GameFormPageState extends State<GameFormPage> {
                             MaterialStateProperty.all(const Color.fromARGB(57, 0, 187, 255)),
                           
                       ),
+                      /*
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           showDialog(
@@ -177,6 +184,38 @@ class _GameFormPageState extends State<GameFormPage> {
                         _formKey.currentState!.reset();
                         }
                       },
+                      */
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                            // Kirim ke Django dan tunggu respons
+                            // TODO: Ganti URL dan jangan lupa tambahkan trailing slash (/) di akhir URL!
+                            final response = await request.postJson(
+                            "http://localhost:8000/create-flutter/",
+                            jsonEncode(<String, String>{
+                                'name': _name,
+                                'genre': _genre,
+                                'amount': _amount.toString(),
+                                'description': _description,
+                                // TODO: Sesuaikan field data sesuai dengan aplikasimu
+                            }));
+                            if (response['status'] == 'success') {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                content: Text("New game successfully saved!"),
+                                ));
+                                Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => MyHomePage()),
+                                );
+                            } else {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                    content:
+                                        Text("Please try again."),
+                                ));
+                            }
+                        }
+                    },
                       child: const Text(
                         "Save",
                         style: TextStyle(color: Colors.black),

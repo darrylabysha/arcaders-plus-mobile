@@ -1,3 +1,4 @@
+import 'package:arcaders_plus/screens/list_product.dart';
 import 'package:flutter/material.dart';
 import 'package:arcaders_plus/screens/menu.dart';
 import 'package:arcaders_plus/screens/gamelist_form.dart';
@@ -60,6 +61,17 @@ class LeftDrawer extends StatelessWidget {
 
             },
           ),
+          ListTile(
+            leading: const Icon(Icons.shopping_basket),
+            title: const Text('View Games'),
+            onTap: () {
+                // Route menu ke halaman produk
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProductPage()),
+                );
+            },
+        ),
         ],
       ),
     );
